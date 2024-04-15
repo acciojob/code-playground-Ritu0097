@@ -87,7 +87,7 @@ const App = () => {
           <PrivateRoute 
             authenticated={authenticated} 
             path="/" 
-            element={<Home />} 
+            element={Home} 
           />
           {/* Public route */}
           <Route path="/public" element={<PublicPage />} />
@@ -98,4 +98,3 @@ const App = () => {
 }
 
 export default App;
-
