@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 
 // Mock authentication function
 const authenticate = () => {
+  // You can implement your actual authentication logic here
   return true; // For demonstration, always return true
 }
 
 // PrivateRoute component
-const PrivateRoute = ({ component: Component, authenticated, ...rest }) => (
-  <Route {...rest} render={(props) => (
-    authenticated === true
-      ? <Component {...props} />
-      : <Redirect to='/login' />
-  )} />
+const PrivateRoute = ({ element: Component, authenticated, ...rest }) => (
+  <Route {...rest} element={authenticated === true ? <Component /> : <Navigate to='/login' />} />
 );
+
+// Logout component
+const Logout = ({ authenticateUser }) => {
+  const handleLogout = () => {
+    authenticateUser(false);
+  }
+
+  return (
+    <button onClick={handleLogout}>Logout</button>
+  );
+}
 
 // Login component
 const Login = ({ authenticateUser }) => {
@@ -37,6 +45,14 @@ const Home = () => (
   </div>
 );
 
+// PublicPage component (accessible to all users)
+const PublicPage = () => (
+  <div className="main-container">
+    <h2>Public Page</h2>
+    <p>This page is accessible to all users.</p>
+  </div>
+);
+
 // App component
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -53,25 +69,33 @@ const App = () => {
             <li>
               <Link to="/">Home</Link>
             </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
+            {authenticated ? (
+              <li>
+                <Logout authenticateUser={authenticateUser} />
+              </li>
+            ) : (
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+            )}
           </ul>
         </nav>
 
-        <Route path="/login">
-          <Login authenticateUser={authenticateUser} />
-        </Route>
-        
-        {/* Private route */}
-        <PrivateRoute 
-          authenticated={authenticated} 
-          path="/" 
-          component={Home} 
-        />
+        <Routes>
+          <Route path="/login" element={<Login authenticateUser={authenticateUser} />} />
+          {/* Private route */}
+          <PrivateRoute 
+            authenticated={authenticated} 
+            path="/" 
+            element={<Home />} 
+          />
+          {/* Public route */}
+          <Route path="/public" element={<PublicPage />} />
+        </Routes>
       </div>
     </Router>
   );
 }
 
 export default App;
+
