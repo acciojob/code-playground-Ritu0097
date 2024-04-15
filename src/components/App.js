@@ -84,10 +84,9 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login authenticateUser={authenticateUser} />} />
           {/* Private route */}
-          <PrivateRoute 
-            authenticated={authenticated} 
-            path="/" 
-            element={Home} 
+          <Route
+            path="/"
+            element={<PrivateRoute authenticated={authenticated} element={Home} />}
           />
           {/* Public route */}
           <Route path="/public" element={<PublicPage />} />
